@@ -29,7 +29,10 @@ int main()
 
   char buffer[1024] = {0};
   read(accepter_fd, buffer, 1024);
+  std::cout << buffer << std::endl;
   
   if (shutdown(listener_fd, SHUT_RDWR) < 0)
     std::cerr << "An error occured while closing the socket" << std::endl;
+  if (close(listener_fd) < 0)
+    std::cerr << "An error occured while closing the listener" << std::endl;
 }
