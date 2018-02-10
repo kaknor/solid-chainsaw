@@ -22,6 +22,7 @@ class Server
   int listener_fd_;
   // Accepter socket fd
   int accepter_fd_;
+  struct sockaddr_in address_;
 
 public:
   Server(const std::string name
@@ -44,5 +45,7 @@ public:
   const std::string& log_file_get() const;
   bool dry_run_get() const;
 
+  void acpt();
   void print() const;
+  void echo() const;
 };

@@ -20,15 +20,15 @@ Server::Server(const std::string name, short unsigned int port,
                  sizeof(int)) < 0)
     std::cerr << "An error occured while setting options to the socket"
               << std::endl;
-  struct sockaddr_in address;
-  address.sin_family = AF_INET;
+  //struct sockaddr_in address;
+  address_.sin_family = AF_INET;
   // TODO : change address to ip_
   // use this for instance :
   // inet_pton(AF_INET, "127.0.0.1", &serv_addr.sin_addr
-  address.sin_addr.s_addr = INADDR_ANY;
+  address_.sin_addr.s_addr = INADDR_ANY;
   // TODO : port_ is an unsigned
-  address.sin_port = htons(port_);
-  if (bind(listener_fd_, (struct sockaddr *)&address,
+  address_.sin_port = htons(port_);
+  if (bind(listener_fd_, (struct sockaddr *)&address_,
            sizeof(struct sockaddr_in)) < 0)
     std::cerr << "An error occured while assigning a name to a socket"
               << std::endl;
@@ -36,11 +36,14 @@ Server::Server(const std::string name, short unsigned int port,
   // TODO : change 3 to a private attributes of the priority q len
   if (listen(listener_fd_, 3) == -1)
     std::cerr << "An error occured while listening to the socket" << std::endl;
-  // TODO : Maybe create a method accept which will be used
-  // in the main function to be used inside a while(1) loop
-  socklen_t address_len = sizeof(address);
-  int accepter_fd_ =
-      accept(listener_fd_, (struct sockaddr *)&address, &address_len);
+}
+
+// TODO : put it back in the ctor
+void Server::acpt() {
+  socklen_t address_len = sizeof(struct sockaddr_in);
+  accepter_fd_ =
+      accept(listener_fd_, (struct sockaddr *)&address_, &address_len);
+  std::cout << "accepter_fd_ : " << accepter_fd_ << std::endl;
   if (accepter_fd_ < 0)
     std::cerr << "An error occured while accepting the socket" << std::endl;
 }
@@ -58,4 +61,11 @@ void Server::print() const {
   std::cout << ip_ << " ";
   std::cout << root_dir_ << " ";
   std::cout << std::endl;
+}
+
+void Server::echo() const
+{
+  char buffer[1024] = {0};
+  read(accepter_fd_, buffer, 1024);
+  std::cout << buffer << std::endl;
 }

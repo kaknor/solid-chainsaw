@@ -9,6 +9,13 @@ int main()
   int listener_fd = socket(AF_INET, SOCK_STREAM, 0);
   if (listener_fd < 0)
     std::cerr << "An error occured during socket creation" << std::endl;
+  int opt = 1;
+  // REUSE allow to reuse socket address's and port's
+  if (setsockopt(listener_fd, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &opt,
+                 sizeof(int)) < 0)
+    std::cerr << "An error occured while setting options to the socket"
+              << std::endl;
+
   // sockaddr_in stands for internet either ipv4 or ipv6
   struct sockaddr_in address;
   address.sin_family = AF_INET;
@@ -26,11 +33,12 @@ int main()
   int accepter_fd = accept(listener_fd, (struct sockaddr*) &address, &address_len);
   if (accepter_fd < 0)
     std::cerr << "An error occured while accepting the socket" << std::endl;
-
-  char buffer[1024] = {0};
-  read(accepter_fd, buffer, 1024);
-  std::cout << buffer << std::endl;
-  
+  while (1)
+    {
+      char buffer[1024] = {0};
+      read(accepter_fd, buffer, 1024);
+      std::cout << buffer << std::endl;
+    }
   if (shutdown(listener_fd, SHUT_RDWR) < 0)
     std::cerr << "An error occured while closing the socket" << std::endl;
   if (close(listener_fd) < 0)
