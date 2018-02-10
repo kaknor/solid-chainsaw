@@ -42,7 +42,7 @@ public:
   const std::string& ip_get() const;
   const std::string& root_dir_get() const;
   const std::string& log_file_get() const;
-  const bool dry_run_get() const;
+  bool dry_run_get() const;
 
   void print() const;
 };
